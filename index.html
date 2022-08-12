@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="">
+    <title>AI Art Gallery</title>
+    <style>
+      body { font-family: sans-serif; }
+      #grid {
+        text-align: center;
+      }
+      #grid:after {
+        content: '';
+        display: block;
+        clear: both;
+      }
+      .grid-sizer {
+        width: 20%;
+      }
+      .grid-item {
+        width: 33%;
+        float: left;
+
+      }
+      .grid-item img {
+          width: 100%;
+          height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid">
+      <div class="posts">
+        <div class="grid-sizer"></div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+    <script>
+      $(function() {
+        // Masonry の初期化
+        let masonryContainer = $('#grid');
+        masonryContainer.masonry({
+          itemSelector: '.grid-item',
+          columnWidth: '.grid-sizer',
+          percentPosition: true
+        });
+        
+        let isContainer = $('.posts');
+        // InfiniteScroll の初期化
+        isContainer.infiniteScroll({
+          // スクロール時に実装されるファイル名など {{#}} の数字が増えていく
+          path: 'https://notame.tech/api/ai-art-gallery/gallery.cgi?number={{#}}',
+          // 追加する要素名
+          append: '.scroll_post',
+          // 最後のページかチェックする要素名
+          checkLastPage: '.pagination__next',
+          // URL を変更しない
+          history: false
+        });
+        
+        isContainer.on('append.infiniteScroll', function( event, response, path, items ) {
+          // スクロールが発生するであろう回数までロードしてみる
+          if (isContainer.data('infiniteScroll').loadCount < 5) {
+            isContainer.infiniteScroll('loadNextPage');
+          }
+        });
+        // 初回の強制ロード
+        isContainer.infiniteScroll('loadNextPage');
+      });
+    </script>
+  </body>
+</html>
